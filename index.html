@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relevamiento Frutika - Formato Full</title>
+  <style>
+    :root { --rojo: #d32f2f; --verde: #2e7d32; --amarillo: #fbc02d; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; padding: 10px; margin: 0; }
+    .container { background: white; padding: 20px; border-radius: 12px; max-width: 650px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: var(--rojo); margin: 0; }
+    h4 { text-align: center; color: #666; margin-bottom: 20px; font-weight: 400; }
+    h3 { border-bottom: 2px solid var(--rojo); padding-bottom: 5px; margin-top: 25px; color: var(--rojo); font-size: 17px; }
+    label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 14px; }
+    input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    .botones-check { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-check { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: bold; background: white; transition: 0.3s; }
+    .btn-si.active { background: var(--verde) !important; color: white !important; border-color: #1b5e20 !important; }
+    .btn-no.active { background: var(--rojo) !important; color: white !important; border-color: #b71c1c !important; }
+    .seccion-productos { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px solid #eee; display: none; }
+    .producto-row { background: white; padding: 12px; margin-bottom: 10px; border-left: 5px solid var(--amarillo); border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .btn-add { background: #0288d1; color: white; width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .btn-remove { background: #ff5252; color: white; font-size: 11px; padding: 5px 10px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer; }
+    .btn-enviar { width: 100%; background: var(--rojo); color: white; margin-top: 30px; font-size: 18px; padding: 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Frutika</h2>
+  <h4>Gestión de Calidad en PDV</h4>
+
+  <form id="formulario">
+    <label>NOMBRE DEL RELEVADOR</label>
+    <select id="vendedor" required onchange="actualizarPDV()">
+      <option value="">Seleccione su nombre...</option>
+      <option>GLORIA MARTINEZ</option><option>MICAELA PAREDES</option><option>ANA PIZURNO</option>
+      <option>TOBÍAS BURGOS</option><option>MARCO ZALAZAR</option><option>MARIA VERON</option>
+      <option>AURELIO CÁCERES</option><option>FERNANDO BENITEZ</option><option>EDITH DUARTE</option>
+      <option>LIZ VERA</option><option>HUGO GÓMEZ</option><option>JOEL ORTIZ</option>
+      <option>YENNIFER ADORNO</option><option>CINTHIA CRISTALDO</option><option>YURIA VERA</option>
+    </select>
+
+    <label>PUNTO DE VENTA</label>
+    <select id="pdv" required>
+      <option value="">Primero seleccione relevador</option>
+    </select>
+
+    <h3>PRODUCTOS PRÓXIMOS A VENCER</h3>
+    <label>¿Tiene productos próximos a vencer?</label>
+    <div class="botones-check">
+      <button type="button" id="btn-venc-si" class="btn-check btn-si" onclick="toggleSeccion('venc', true)">SÍ TIENE</button>
+      <button type="button" id="btn-venc-no" class="btn-check btn-no" onclick="toggleSeccion('venc', false)">NO TIENE</button>
+    </div>
+    <div id="seccion-vencidos" class="seccion-productos">
+      <div id="cont-vencidos"></div>
+      <button type="button" class="btn-add" onclick="agregarFila('venc')">+ AGREGAR PRODUCTO</button>
+    </div>
+
+    <h3>PRODUCTOS AVERIADOS</h3>
+    <label>¿Tiene productos averiados?</label>
+    <div class="botones-check">
+      <button type="button" id="btn-aver-si" class="btn-check btn-si" onclick="toggleSeccion('aver', true)">SÍ TIENE</button>
+      <button type="button" id="btn-aver-no" class="btn-check btn-no" onclick="toggleSeccion('aver', false)">NO TIENE</button>
+    </div>
+    <div id="seccion-averiados" class="seccion-productos">
+      <div id="cont-averiados"></div>
+      <button type="button" class="btn-add" onclick="agregarFila('aver')">+ AGREGAR PRODUCTO</button>
+    </div>
+
+    <button type="submit" class="btn-enviar">ENVIAR REPORTE AL SHEET</button>
+  </form>
+</div>
+
+<script>
+// --- CONFIGURACIÓN DE DATOS ---
+const datosPDV = {
+  "GLORIA MARTINEZ": ["REAL VILLAMORRA", "ARETE LAMBARE", "PUEBLO LAMBARE", "SUPERMERCADO METRO", "REAL SAN VICENTE"],
+  "MICAELA PAREDES": ["LUISITO 4 MOJONES", "LA BOMBA TERMINAL", "REAL ACCESO SUR", "PRYCA TERMINAL", "DIEFER ACCESO", "PUEBLO PASEO DEL SUR", "LUISITO VILLA ELISA"],
+  "ANA PIZURNO": ["GRAN VIA ASUNCION", "LA BOMBA PROCERES", "REAL FELIX BOGADO", "FORTIS JOCKEY", "VILLA SOFIA SAJONIA", "PACIFICO SAJONIA", "LUISITO FELIX BOGADO"],
+  "TOBÍAS BURGOS": ["CASA RICA LOS LAURELES", "SALEMMA CENTER", "REAL FDO.", "PUEBLO FDO.", "SALEMMA MULTIPLAZA"],
+  "MARCO ZALAZAR": ["GUARANI", "LOS JARDINES FDO.", "GRAN VIA ROYAL", "PRYCA EXPRESS"],
+  "MARIA VERON": ["SUPERMAS ÑEMBY", "GRAN VIA ÑEMBY", "LUISITO ÑEMBY", "REAL ÑEMBY 2", "LA BOMBA ÑEMBY", "REAL 1 ÑEMBY"],
+  "AURELIO CÁCERES": ["MOREL HNOS.", "EDWARD CAPIATA", "LUISITO ITAUGUA", "REAL CAPIATA 2", "SANTA RITA 2", "LA BOMBA AREGUA", "AHORRAZO CAPIATA RUTA 2"],
+  "FERNANDO BENITEZ": ["CASA RICA MOLAS", "CASA RICA ESPAÑA", "SALEMMA CARMELITAS", "ARETE PRIMER PRESIDENTE", "ARETE SAUSALITO"],
+  "EDITH DUARTE": ["LUISITO MRA", "KINGO MRA", "PUEBLO MRA", "LA BOMBA VÍA FÉRREA", "PUEBLO ARTIGAS", "FORTIS MARIANO", "PUEBLAZO LIMPIO"],
+  "LIZ VERA": ["ARETE PINEDO", "AHORRAZO SAN LORENZO", "LA BOMBA STA. TERESA", "SALEMMA SHOPPING SANLO", "FORTIS LAURELTY", "LUISITO SAN LORENZO"],
+  "HUGO GÓMEZ": ["LUISITO LUQUE", "VILLA SOFIA LUQUE", "LT MORACUE", "GRAN VIA LUQUE", "LOS JARDINES VILLA ADELA", "LOS JARDINES MORA CUE", "LOS JARDINES PRIMAVERA", "LOS JARDINES GRAL AQUINO", "AHO AHO COMERCIAL"],
+  "JOEL ORTIZ": ["CASA GRUTTER DEF", "GRUTTER ABASTO", "SAPROCAL CASA FRESCA", "SUPERMAS ABASTO", "MARANGATU", "FORTIS ABASTO", "LUISITO EUSEBIO AYALA"],
+  "YENNIFER ADORNO": ["COLON GUARAMBARE", "LUISITO YPANE", "STA. RITA 1", "AHORRAZO CAPIATA", "ÑA NICA", "LUISITO CAPIATA", "REAL CAPIATA 1"],
+  "CINTHIA CRISTALDO": ["SUPERMERCADO CHORTITZER", "ECOP LOMA PLATA", "ECOP PIONEROS", "ECOP BIOCEANICA", "ECOP BERGFELD"],
+  "YURIA VERA": ["LT CASA CENTRAL", "LT EXPRESS", "LT SAN JOSÉ", "LT VILLA HAYES", "LT VILLA MADRID", "LT MBAYUE", "LT EMBOSCADA", "LUISITO LIMPIO", "LT RINCON"]
+};
+
+const listaProductos = `
+  <option value="">Seleccione producto</option>
+  <optgroup label="AGUAS GÉNESIS">
+    <option>7840117011680 - Agua Mineral Sin Gas 500 ml Génesis</option>
+    <option>7840117011697 - Agua Mineral Sin Gas 1 l Génesis</option>
+    <option>7840117011703 - Agua Mineral Sin Gas 2,25 l Génesis</option>
+    <option>7840117012045 - Promo Pack x4 Agua Mineral Sin gas 2,25 l Genesis</option>
+    <option>7840117011710 - Agua Mineral Con Gas 500 ml Génesis</option>
+    <option>7840117011826 - Agua Funcional Harmony 500 ml Génesis</option>
+    <option>7840117011833 - Agua Funcional Care 500 ml Génesis</option>
+    <option>7840117012007 - Agua Funcional Fiber Green 500 ml Génesis</option>
+    <option>7840117011994 - Agua Funcional Young 500 ml Génesis</option>
+  </optgroup>
+  <optgroup label="JUGOS 100% Y NÉCTARES">
+    <option>7840117008031 - Jugo 100% Multi 7 1 l Frutika</option>
+    <option>7840117011932 - Jugo 100% Naranja 1 l Frutika</option>
+    <option>7840117011659 - Jugo 100% Mix 1 l Frutika</option>
+    <option>7840117012243 - Jugo 100% Naranja Slim 200 ml Frutika</option>
+    <option>7840117001025 - Nectar de Naranja Slim 200 ml Frutika</option>
+    <option>7840117002022 - Nectar de Manzana Slim 200 ml Frutika</option>
+    <option>7840117004026 - Nectar de Durazno Slim 200 ml Frutika</option>
+    <option>7840117001018 - Nectar de Naranja 1 l Frutika</option>
+    <option>7840117003012 - Nectar de Pomelo 1 l Frutika</option>
+    <option>7840117002015 - Nectar de Manzana 1 l Frutika</option>
+    <option>7840117004019 - Nectar de Durazno 1 l Frutika</option>
+    <option>7840117005016 - Nectar de Guayaba 1 l Frutika</option>
+    <option>7840117001032 - Nectar Light de Naranja 1 l Frutika</option>
+    <option>7840117004033 - Nectar Light de Durazno 1 l Frutika</option>
+    <option>7840117011178 - Promo Pack x2 Nectar de Durazno 1 l Frutika</option>
+    <option>7840117011161 - Promo Pack x2 Nectar de Manzana 1 l Frutika</option>
+    <option>7840117011154 - Promo Pack x2 Nectar de Naranja 1 l Frutika</option>
+    <option>7840117010843 - Promo Pack 6x5 Nectar de Durazno 200ml Frutika</option>
+    <option>7840117010836 - Promo Pack 6x5 Nectar de Manzana 200 ml Frutika</option>
+    <option>7840117010829 - Promo Pack 6x5 Nectar de Naranja 200 ml Frutika</option>
+    <option>7840117008048 - Bebida de Mburucuya 1 l Frutika</option>
+  </optgroup>
+  <optgroup label="SALSAS Y TOMATES">
+    <option>7840117010119 - Extracto de Tomate 140 g Frutika</option>
+    <option>7840117010126 - Extracto de Tomate 70 g Frutika</option>
+    <option>7840117012229 - Extracto de Tomate 220 g Frutika</option>
+    <option>7840117010362 - Extracto de Tomate Tetra 140 g Perita</option>
+    <option>7840117010379 - Extracto de Tomate Tetra 70 g Perita</option>
+    <option>7840117012267 - Extracto de Tomate Doypack 140 g Perita</option>
+    <option>7840117012274 - Extracto de Tomate Doypack 70 g Perita</option>
+    <option>7840117011567 - Pure de Tomate Slim 220 g Frutika</option>
+    <option>7840117011987 - Salsa Pizza Doypack 300 g Frutika</option>
+    <option>7840117011963 - Salsa Filetto Doypack 300 g Frutika</option>
+    <option>7840117011970 - Salsa Pomarola Doypack 300 g Frutika</option>
+    <option>7840117011574 - Salsa Pizza Tetra 220 g Frutika</option>
+    <option>7840117010956 - Pure de tomate doypack de 300ml</option>
+  </optgroup>
+  <optgroup label="CONDIMENTOS">
+    <option>7840117010782 - Chimichurri Sin Picante 400 g Frutika</option>
+    <option>7840117010942 - Chimichurri Picante 400 g Frutika</option>
+    <option>7840117010454 - Ketchup Sin Picante 400 g Frutika</option>
+    <option>7840117011345 - Ketchup Sin Picante 3 kg Perita</option>
+    <option>7840117011352 - Ketchup Sin Picante 160 ml Perita</option>
+    <option>7840117010645 - Ketchup Picante 400 g Frutika</option>
+    <option>7840117010485 - Aji Picante 150 ml Frutika</option>
+  </optgroup>`;
+
+// --- FUNCIONES DE INTERFAZ ---
+function actualizarPDV() {
+  const vendedor = document.getElementById("vendedor").value;
+  const comboPDV = document.getElementById("pdv");
+  comboPDV.innerHTML = '<option value="">Seleccione PDV</option>';
+  if (vendedor && datosPDV[vendedor]) {
+    datosPDV[vendedor].sort().forEach(punto => {
+      let opcion = document.createElement("option");
+      opcion.value = punto; opcion.textContent = punto;
+      comboPDV.appendChild(opcion);
+    });
+  }
+}
+
+let respuestas = { venc: null, aver: null };
+
+function toggleSeccion(tipo, tiene) {
+  respuestas[tipo] = tiene;
+  
+  // Manejo de clases visuales
+  document.getElementById(`btn-${tipo}-si`).classList.toggle('active', tiene === true);
+  document.getElementById(`btn-${tipo}-no`).classList.toggle('active', tiene === false);
+  
+  const seccion = document.getElementById(`seccion-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
+  seccion.style.display = tiene ? "block" : "none";
+
+  // Si dice SI y no hay filas, agregar una automáticamente
+  const contenedor = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
+  if(tiene && contenedor.children.length === 0) {
+    agregarFila(tipo);
+  }
+}
+
+function agregarFila(tipo) {
+  const contenedor = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
+  const div = document.createElement("div");
+  div.className = "producto-row";
+  
+  const campoExtra = tipo === 'venc' 
+    ? `<label>Fecha Vencimiento</label><input type="date" class="fechaVenc" required>` 
+    : `<label>Observación Avería</label><input type="text" class="obsAver" placeholder="Ej: Envase roto" required>`;
+
+  div.innerHTML = `
+    <label>Producto</label><select class="prodSelect" required>${listaProductos}</select>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <div style="flex:2">${campoExtra}</div>
+      <div style="flex:1"><label>Cantidad</label><input type="number" class="cantProd" min="1" required></div>
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button>
+  `;
+  contenedor.appendChild(div);
+}
+
+// --- ENVÍO DE DATOS ---
+document.getElementById("formulario").onsubmit = function(e) {
+  e.preventDefault();
+  
+  if(respuestas.venc === null || respuestas.aver === null) {
+    return alert("Por favor, responda SÍ o NO en ambas secciones.");
+  }
+
+  // Capturar listas de productos
+  const listaV = Array.from(document.querySelectorAll('#cont-vencidos .producto-row')).map(row => ({
+    producto: row.querySelector('.prodSelect').value,
+    fechaVenc: row.querySelector('.fechaVenc').value,
+    cantidad: row.querySelector('.cantProd').value
+  }));
+
+  const listaA = Array.from(document.querySelectorAll('#cont-averiados .producto-row')).map(row => ({
+    producto: row.querySelector('.prodSelect').value,
+    observacion: row.querySelector('.obsAver').value,
+    cantidad: row.querySelector('.cantProd').value
+  }));
+
+  const payload = {
+    fecha: new Date().toISOString().split('T')[0], // Genera la fecha actual YYYY-MM-DD
+    relevador: document.getElementById('vendedor').value,
+    pdv: document.getElementById('pdv').value,
+    tieneVencidos: respuestas.venc,
+    tieneAveriados: respuestas.aver,
+    listaVencidos: listaV,
+    listaAveriados: listaA
+  };
+
+  const btnEnviar = document.querySelector('.btn-enviar');
+  btnEnviar.disabled = true;
+  btnEnviar.innerText = "ENVIANDO...";
+
+  fetch('https://script.google.com/macros/s/AKfycbzHyKyJcUPn_ciWXZ30rW9WTNThfVxJzSYP85L7o52xn0_2ulgOhpJEokjgtDzmYsI/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(payload)
+  }).then(() => {
+    alert("¡REPORTE ENVIADO EXITOSAMENTE!");
+    location.reload();
+  }).catch(err => {
+    alert("Error al enviar: " + err);
+    btnEnviar.disabled = false;
+    btnEnviar.innerText = "ENVIAR REPORTE AL SHEET";
+  });
+};
+</script>
+</body>
+</html>
