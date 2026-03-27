@@ -3,34 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SISTEMA RELEVAMIENTO FRUTIKA</title>
+  <title>SISTEMA RELEVAMIENTO FRUTIKA - COMPLETO</title>
   <style>
     :root { --rojo: #d32f2f; --verde: #2e7d32; --amarillo: #fbc02d; --azul: #0288d1; --gris: #f4f6f8; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--gris); padding: 10px; margin: 0; text-transform: uppercase; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--gris); padding: 10px; margin: 0; text-transform: uppercase; }
     .container { background: white; padding: 20px; border-radius: 12px; max-width: 650px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     h2 { text-align: center; color: var(--rojo); margin: 0; }
     h4 { text-align: center; color: #666; margin-bottom: 20px; font-size: 11px; letter-spacing: 1px; }
-    
     label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 12px; }
     input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; text-transform: uppercase; font-size: 13px; }
-
-    /* PESTAÑAS */
+    
     .selector-secciones { display: flex; gap: 10px; margin: 20px 0; }
     .btn-tab { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: #e0e0e0; color: #666; transition: 0.3s; font-size: 12px; }
-    .btn-tab.active-venc { background: var(--amarillo); color: black; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .btn-tab.active-aver { background: var(--rojo); color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .btn-tab.active-venc { background: var(--amarillo); color: black; }
+    .btn-tab.active-aver { background: var(--rojo); color: white; }
 
-    /* PREGUNTAS SI/NO */
     .pregunta-contenedor { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #ddd; }
-    .pregunta-titulo { font-size: 11px; font-weight: bold; margin-bottom: 12px; display: block; }
-    .botones-decision { display: flex; gap: 10px; max-width: 220px; margin: auto; }
+    .botones-decision { display: flex; gap: 10px; max-width: 220px; margin: auto; margin-top: 10px; }
     .btn-sn { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-weight: bold; }
     .active-si { background: var(--verde) !important; color: white; border-color: var(--verde); }
     .active-no { background: var(--rojo) !important; color: white; border-color: var(--rojo); }
 
-    /* FILAS DE PRODUCTOS */
     .seccion-productos { display: none; margin-top: 10px; }
-    .producto-row { background: white; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--amarillo); border-radius: 4px; border-top: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee; }
+    .producto-row { background: white; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--amarillo); border-radius: 4px; border: 1px solid #eee; }
     .btn-add { background: var(--azul); color: white; width: 100%; padding: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     .btn-remove { background: #ff5252; color: white; font-size: 10px; padding: 6px 10px; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer; float: right; }
     .btn-enviar { width: 100%; background: var(--rojo); color: white; margin-top: 30px; font-size: 18px; padding: 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
@@ -40,12 +35,12 @@
 
 <div class="container">
   <h2>FRUTIKA</h2>
-  <h4>CONTROL DE VENCIMIENTOS Y AVERÍAS</h4>
+  <h4>CONTROL DE CALIDAD</h4>
 
   <form id="formulario">
     <label>NOMBRE DEL RELEVADOR</label>
     <select id="vendedor" required onchange="actualizarPDV()">
-      <option value="">SELECCIONE RELEVADOR...</option>
+      <option value="">SELECCIONE...</option>
       <option>GLORIA MARTINEZ</option><option>MICAELA PAREDES</option><option>ANA PIZURNO</option>
       <option>TOBÍAS BURGOS</option><option>MARCO ZALAZAR</option><option>MARIA VERON</option>
       <option>AURELIO CÁCERES</option><option>FERNANDO BENITEZ</option><option>EDITH DUARTE</option>
@@ -59,13 +54,13 @@
     </select>
 
     <div class="selector-secciones">
-        <button type="button" id="tab-venc" class="btn-tab active-venc" onclick="cambiarTab('venc')">📅 PRÓXIMOS A VENCER</button>
-        <button type="button" id="tab-aver" class="btn-tab" onclick="cambiarTab('aver')">⚠️ PRODUCTOS AVERIADOS</button>
+        <button type="button" id="tab-venc" class="btn-tab active-venc" onclick="cambiarTab('venc')">📅 VENCIDOS</button>
+        <button type="button" id="tab-aver" class="btn-tab" onclick="cambiarTab('aver')">⚠️ AVERIADOS</button>
     </div>
 
     <div id="panel-vencidos">
         <div class="pregunta-contenedor">
-            <span class="pregunta-titulo">¿HAY PRODUCTOS PRÓXIMOS A VENCER EN ESTE PDV?</span>
+            <span style="font-size: 11px; font-weight: bold;">¿HAY PRODUCTOS PRÓXIMOS A VENCER?</span>
             <div class="botones-decision">
               <button type="button" id="venc-si" class="btn-sn" onclick="decidirCarga('venc', true)">SÍ</button>
               <button type="button" id="venc-no" class="btn-sn" onclick="decidirCarga('venc', false)">NO</button>
@@ -73,13 +68,13 @@
         </div>
         <div id="seccion-vencidos" class="seccion-productos">
             <div id="cont-vencidos"></div>
-            <button type="button" class="btn-add" onclick="agregarFila('venc')">+ AÑADIR OTRO VENCIDO</button>
+            <button type="button" class="btn-add" onclick="agregarFila('venc')">+ AÑADIR PRODUCTO</button>
         </div>
     </div>
 
     <div id="panel-averiados" style="display:none;">
         <div class="pregunta-contenedor">
-            <span class="pregunta-titulo">¿HAY PRODUCTOS AVERIADOS EN ESTE PDV?</span>
+            <span style="font-size: 11px; font-weight: bold;">¿HAY PRODUCTOS AVERIADOS?</span>
             <div class="botones-decision">
               <button type="button" id="aver-si" class="btn-sn" onclick="decidirCarga('aver', true)">SÍ</button>
               <button type="button" id="aver-no" class="btn-sn" onclick="decidirCarga('aver', false)">NO</button>
@@ -87,16 +82,15 @@
         </div>
         <div id="seccion-averiados" class="seccion-productos">
             <div id="cont-averiados"></div>
-            <button type="button" class="btn-add" onclick="agregarFila('aver')">+ AÑADIR OTRA AVERÍA</button>
+            <button type="button" class="btn-add" onclick="agregarFila('aver')">+ AÑADIR AVERÍA</button>
         </div>
     </div>
 
-    <button type="submit" class="btn-enviar">ENVIAR REPORTE</button>
+    <button type="submit" class="btn-enviar" id="btnEnvio">ENVIAR REPORTE</button>
   </form>
 </div>
 
 <script>
-// --- BASE DE DATOS DE RELEVADORES Y PDV ---
 const datosPDV = {
   "GLORIA MARTINEZ": ["REAL VILLAMORRA", "ARETE LAMBARE", "PUEBLO LAMBARE", "SUPERMERCADO METRO", "REAL SAN VICENTE"],
   "MICAELA PAREDES": ["LUISITO 4 MOJONES", "LA BOMBA TERMINAL", "REAL ACCESO SUR", "PRYCA TERMINAL", "DIEFER ACCESO", "PUEBLO PASEO DEL SUR", "LUISITO VILLA ELISA"],
@@ -115,7 +109,6 @@ const datosPDV = {
   "YURIA VERA": ["LT CASA CENTRAL", "LT EXPRESS", "LT SAN JOSÉ", "LT VILLA HAYES", "LT VILLA MADRID", "LT MBAYUE", "LT EMBOSCADA", "LUISITO LIMPIO", "LT RINCON"]
 };
 
-// --- BASE DE DATOS DE PRODUCTOS ---
 const listaProductos = `
   <option value="">SELECCIONE PRODUCTO...</option>
   <optgroup label="AGUAS GÉNESIS">
@@ -143,7 +136,7 @@ const listaProductos = `
     <option>7840117005016 - NECTAR DE GUAYABA 1 L FRUTIKA</option>
     <option>7840117008048 - BEBIDA DE MBURUCUYA 1 L FRUTIKA</option>
   </optgroup>
-  <optgroup label="TOMATES Y SALSAS">
+  <optgroup label="SALSAS Y TOMATES">
     <option>7840117010119 - EXTRACTO DE TOMATE 140 G FRUTIKA</option>
     <option>7840117010126 - EXTRACTO DE TOMATE 70 G FRUTIKA</option>
     <option>7840117012229 - EXTRACTO DE TOMATE 220 G FRUTIKA</option>
@@ -162,21 +155,21 @@ const listaProductos = `
   </optgroup>`;
 
 function actualizarPDV() {
-  const vendedor = document.getElementById("vendedor").value;
-  const comboPDV = document.getElementById("pdv");
-  comboPDV.innerHTML = '<option value="">-- SELECCIONE PDV --</option>';
-  if (vendedor && datosPDV[vendedor]) {
-    datosPDV[vendedor].sort().forEach(p => {
-      let o = document.createElement("option"); o.value = p; o.textContent = p; comboPDV.appendChild(o);
+  const v = document.getElementById("vendedor").value;
+  const c = document.getElementById("pdv");
+  c.innerHTML = '<option value="">-- SELECCIONE PDV --</option>';
+  if (v && datosPDV[v]) {
+    datosPDV[v].sort().forEach(p => {
+      let o = document.createElement("option"); o.value = p; o.textContent = p; c.appendChild(o);
     });
   }
 }
 
 function cambiarTab(t) {
-    document.getElementById('panel-vencidos').style.display = (t === 'venc') ? 'block' : 'none';
-    document.getElementById('panel-averiados').style.display = (t === 'aver') ? 'block' : 'none';
-    document.getElementById('tab-venc').className = (t === 'venc') ? 'btn-tab active-venc' : 'btn-tab';
-    document.getElementById('tab-aver').className = (t === 'aver') ? 'btn-tab active-aver' : 'btn-tab';
+  document.getElementById('panel-vencidos').style.display = (t === 'venc') ? 'block' : 'none';
+  document.getElementById('panel-averiados').style.display = (t === 'aver') ? 'block' : 'none';
+  document.getElementById('tab-venc').className = (t === 'venc') ? 'btn-tab active-venc' : 'btn-tab';
+  document.getElementById('tab-aver').className = (t === 'aver') ? 'btn-tab active-aver' : 'btn-tab';
 }
 
 let respuestas = { venc: null, aver: null };
@@ -185,10 +178,7 @@ function decidirCarga(tipo, tiene) {
   respuestas[tipo] = tiene;
   document.getElementById(`${tipo}-si`).className = tiene ? 'btn-sn active-si' : 'btn-sn';
   document.getElementById(`${tipo}-no`).className = !tiene ? 'btn-sn active-no' : 'btn-sn';
-  
-  const seccion = document.getElementById(`seccion-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
-  seccion.style.display = tiene ? "block" : "none";
-  
+  document.getElementById(`seccion-${tipo === 'venc' ? 'vencidos' : 'averiados'}`).style.display = tiene ? "block" : "none";
   const cont = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
   if (tiene && cont.children.length === 0) agregarFila(tipo);
 }
@@ -198,30 +188,69 @@ function agregarFila(tipo) {
   const div = document.createElement("div");
   div.className = "producto-row";
   if(tipo === 'aver') div.style.borderLeftColor = "var(--rojo)";
-  
-  const extraField = tipo === 'venc' 
-    ? `<label>FECHA VENCIMIENTO</label><input type="date" required>` 
-    : `<label>TIPO DE AVERÍA / OBS.</label><input type="text" placeholder="EJ: CAJA GOLPEADA" required>`;
-  
   div.innerHTML = `
-    <label>PRODUCTO</label><select required>${listaProductos}</select>
+    <label>PRODUCTO</label><select class="p-prod" required>${listaProductos}</select>
     <div style="display:flex; gap:10px; margin-top:10px;">
-      <div style="flex:2">${extraField}</div>
-      <div style="flex:1"><label>CANT.</label><input type="number" min="1" required></div>
+      <div style="flex:2">${tipo === 'venc' ? '<label>VENCIMIENTO</label><input type="date" class="p-extra" required>' : '<label>OBSERVACIÓN</label><input type="text" class="p-extra" placeholder="GOLPE" required>'}</div>
+      <div style="flex:1"><label>CANT.</label><input type="number" class="p-cant" min="1" required></div>
     </div>
-    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button>
-    <div style="clear:both"></div>
-  `;
+    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button><div style="clear:both"></div>`;
   contenedor.appendChild(div);
 }
 
 document.getElementById("formulario").onsubmit = function(e) {
   e.preventDefault();
   if (respuestas.venc === null || respuestas.aver === null) {
-    alert("POR FAVOR, RESPONDA 'SÍ' O 'NO' EN AMBAS SECCIONES (VENCIDOS Y AVERIADOS).");
-    return;
+    alert("POR FAVOR RESPONDA SÍ O NO EN AMBAS PESTAÑAS."); return;
   }
-  alert("REPORTE GENERADO CON ÉXITO");
+
+  const btn = document.getElementById("btnEnvio");
+  btn.disabled = true; btn.innerText = "ENVIANDO...";
+
+  const listaVencidos = [];
+  document.querySelectorAll("#cont-vencidos .producto-row").forEach(r => {
+    listaVencidos.push({
+      producto: r.querySelector(".p-prod").value,
+      fechaVenc: r.querySelector(".p-extra").value,
+      cantidad: r.querySelector(".p-cant").value
+    });
+  });
+
+  const listaAveriados = [];
+  document.querySelectorAll("#cont-averiados .producto-row").forEach(r => {
+    listaAveriados.push({
+      producto: r.querySelector(".p-prod").value,
+      observacion: r.querySelector(".p-extra").value,
+      cantidad: r.querySelector(".p-cant").value
+    });
+  });
+
+  const payload = {
+    fecha: new Date().toLocaleString(),
+    relevador: document.getElementById("vendedor").value,
+    pdv: document.getElementById("pdv").value,
+    tieneVencidos: respuestas.venc,
+    tieneAveriados: respuestas.aver,
+    listaVencidos: listaVencidos,
+    listaAveriados: listaAveriados
+  };
+
+  const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzHyKyJcUPn_ciWXZ30rW9WTNThfVxJzSYP85L7o52xn0_2ulgOhpJEokjgtDzmYsI/exec"; // REEMPLAZA ESTO
+
+  fetch(URL_SCRIPT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    alert("¡REPORTE ENVIADO CON ÉXITO!");
+    location.reload();
+  })
+  .catch(err => {
+    alert("ERROR AL ENVIAR");
+    btn.disabled = false; btn.innerText = "REINTENTAR";
+  });
 };
 </script>
 </body>
