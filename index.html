@@ -227,7 +227,7 @@ function agregarFila(tipo) {
 document.getElementById("formulario").onsubmit = function(e) {
   e.preventDefault();
   if (respuestas.venc === null || respuestas.aver === null) {
-    alert("POR FAVOR RESPONDA SÍ O NO EN AMBAS PESTAÑAS."); return;
+    alert("DEBE COMPLETAR EL APARTADO DE PRÓXIMOS A VENCER Y EL DE AVERIADOS."); return;
   }
 
   const btn = document.getElementById("btnEnvio");
