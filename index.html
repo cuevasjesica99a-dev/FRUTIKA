@@ -13,54 +13,26 @@
       --gris-fondo: #f0f2f5; 
       --blanco: #ffffff;
     }
-
-    body { 
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-      background: var(--gris-fondo); 
-      padding: 10px; 
-      margin: 0; 
-      text-transform: uppercase; 
-    }
-
-    .container { 
-      background: var(--blanco); 
-      padding: 25px; 
-      border-radius: 15px; 
-      max-width: 650px; 
-      margin: auto; 
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
-      border-top: 8px solid var(--verde-frutika);
-    }
-
+    body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--gris-fondo); padding: 10px; margin: 0; text-transform: uppercase; }
+    .container { background: var(--blanco); padding: 25px; border-radius: 15px; max-width: 650px; margin: auto; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--verde-frutika); }
     .header-frutika { text-align: center; margin-bottom: 25px; }
-    .header-frutika h2 {
-      font-family: 'Brush Script MT', 'Segoe Script', cursive; 
-      color: var(--verde-frutika);
-      font-size: 48px;
-      margin: 0;
-      text-transform: none;
-    }
+    .header-frutika h2 { font-family: 'Brush Script MT', cursive; color: var(--verde-frutika); font-size: 48px; margin: 0; text-transform: none; }
     .header-frutika h4 { color: #555; margin: 0; font-size: 12px; letter-spacing: 3px; font-weight: bold; }
-
     label { font-weight: bold; display: block; margin-top: 20px; color: var(--verde-frutika); font-size: 13px; }
     input, select { width: 100%; padding: 14px; margin-top: 6px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; text-transform: uppercase; font-size: 14px; }
-    
     .p-prod { border: 2px solid var(--verde-frutika) !important; background-color: var(--verde-claro); font-weight: bold; }
-
     .selector-secciones { display: flex; gap: 12px; margin: 25px 0; }
     .btn-tab { flex: 1; padding: 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: #e0e0e0; color: #666; transition: 0.3s; font-size: 12px; }
     .btn-tab.active-venc { background: var(--amarillo-frutika); color: #333; }
     .btn-tab.active-aver { background: var(--rojo-frutika); color: white; }
-
     .pregunta-contenedor { background: var(--verde-claro); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid #c8e6c9; }
     .botones-decision { display: flex; gap: 15px; max-width: 250px; margin: auto; margin-top: 15px; }
     .btn-sn { flex: 1; padding: 12px; border: 2px solid #ccc; border-radius: 8px; background: white; cursor: pointer; font-weight: bold; }
     .active-si { background: var(--verde-frutika) !important; color: white; border-color: var(--verde-frutika); }
     .active-no { background: var(--rojo-frutika) !important; color: white; border-color: var(--rojo-frutika); }
-
     .seccion-productos { display: none; margin-top: 15px; }
     .producto-row { background: white; padding: 18px; margin-bottom: 15px; border-left: 6px solid var(--verde-frutika); border-radius: 8px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .btn-add { background: var(--verde-frutika); color: white; width: 100%; padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; }
+    .btn-add { background: var(--verde-frutika); color: white; width: 100%; padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     .btn-remove { background: #ff5252; color: white; font-size: 11px; padding: 8px 12px; border: none; border-radius: 5px; margin-top: 12px; cursor: pointer; float: right; font-weight: bold; }
     .btn-enviar { width: 100%; background: var(--verde-frutika); color: white; margin-top: 40px; font-size: 18px; padding: 22px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
   </style>
@@ -243,10 +215,10 @@ function agregarFila(tipo) {
   
   div.innerHTML = `
     <label>PRODUCTO (NOMBRE O CÓDIGO)</label>
-    <input type="text" list="lista-productos-datalist" class="p-prod" placeholder="BUSCAR PRODUCTO..." required autocomplete="off">
+    <input type="text" list="lista-productos-datalist" class="p-prod" placeholder="BUSCAR PRODUCTO..." onfocus="this.value=''" required autocomplete="off">
     <div style="display:flex; gap:10px; margin-top:10px;">
       <div style="flex:2">${tipo === 'venc' ? '<label>VENCIMIENTO</label><input type="date" class="p-extra" required>' : '<label>OBSERVACIÓN</label><input type="text" class="p-extra" placeholder="GOLPE" required>'}</div>
-      <div style="flex:1"><label>CANT.</label><input type="number" class="p-cant" min="1" required></div>
+      <div style="flex:1"><label>CANT.</label><input type="number" class="p-cant" min="1" value="1" required></div>
     </div>
     <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button><div style="clear:both"></div>`;
   contenedor.appendChild(div);
@@ -254,32 +226,30 @@ function agregarFila(tipo) {
 
 document.getElementById("formulario").onsubmit = function(e) {
   e.preventDefault();
-  if (respuestas.venc === null || respuestas.aver === null) { alert("COMPLETE AMBAS SECCIONES."); return; }
+  if (respuestas.venc === null || respuestas.aver === null) { alert("DEBE MARCAR SÍ/NO EN AMBAS SECCIONES."); return; }
   const btn = document.getElementById("btnEnvio");
   btn.disabled = true; btn.innerText = "ENVIANDO...";
-
-  const listaVencidos = [];
-  document.querySelectorAll("#cont-vencidos .producto-row").forEach(r => {
-    listaVencidos.push({ producto: r.querySelector(".p-prod").value, extra: r.querySelector(".p-extra").value, cant: r.querySelector(".p-cant").value });
-  });
-
-  const listaAveriados = [];
-  document.querySelectorAll("#cont-averiados .producto-row").forEach(r => {
-    listaAveriados.push({ producto: r.querySelector(".p-prod").value, extra: r.querySelector(".p-extra").value, cant: r.querySelector(".p-cant").value });
-  });
 
   const payload = {
     relevador: document.getElementById("vendedor").value,
     pdv: document.getElementById("pdv").value,
-    vencidos: listaVencidos,
-    averiados: listaAveriados
+    vencidos: [],
+    averiados: []
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbyclb0ksbIFJb68VBWkgYerhmzFbfNs0LvAg-Ff_khFIndSYdtDW8e9W-31DWlpJQ7F/exec", {
+  document.querySelectorAll("#cont-vencidos .producto-row").forEach(r => {
+    payload.vencidos.push({ producto: r.querySelector(".p-prod").value, extra: r.querySelector(".p-extra").value, cant: r.querySelector(".p-cant").value });
+  });
+
+  document.querySelectorAll("#cont-averiados .producto-row").forEach(r => {
+    payload.averiados.push({ producto: r.querySelector(".p-prod").value, extra: r.querySelector(".p-extra").value, cant: r.querySelector(".p-cant").value });
+  });
+
+  fetch("https://script.google.com/macros/s/AKfycbyg5Q_bZR_5I_Y2QQkp1SFyBhUxFuJY-5HUnuJqoNlohjKQLb3VXvY1h1N3j6tlaqEo/exec", {
     method: "POST",
     mode: "no-cors",
     body: JSON.stringify(payload)
-  }).then(() => { alert("ENVIADO"); location.reload(); });
+  }).then(() => { alert("REPORTE ENVIADO CORRECTAMENTE"); location.reload(); });
 };
 </script>
 </body>
