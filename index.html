@@ -20,11 +20,9 @@
     .header-frutika h4 { color: #555; margin: 0; font-size: 12px; letter-spacing: 3px; font-weight: bold; }
     label { font-weight: bold; display: block; margin-top: 20px; color: var(--verde-frutika); font-size: 13px; }
     input, select { width: 100%; padding: 14px; margin-top: 6px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; text-transform: uppercase; font-size: 14px; }
-    
     .p-prod { border: 2px solid var(--verde-frutika) !important; background-color: var(--verde-claro); font-weight: bold; }
     .input-error { border: 3px solid var(--rojo-frutika) !important; background-color: #ffebee !important; }
     .msg-error { color: var(--rojo-frutika); font-size: 10px; font-weight: bold; margin-top: 5px; display: none; }
-
     .selector-secciones { display: flex; gap: 12px; margin: 25px 0; }
     .btn-tab { flex: 1; padding: 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: #e0e0e0; color: #666; transition: 0.3s; font-size: 12px; }
     .btn-tab.active-venc { background: var(--amarillo-frutika); color: #333; }
@@ -39,10 +37,10 @@
     .btn-add { background: var(--verde-frutika); color: white; width: 100%; padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     .btn-remove { background: #ff5252; color: white; font-size: 11px; padding: 8px 12px; border: none; border-radius: 5px; margin-top: 12px; cursor: pointer; float: right; font-weight: bold; }
     .btn-enviar { width: 100%; background: var(--verde-frutika); color: white; margin-top: 40px; font-size: 18px; padding: 22px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
-
     .checklist-container { background: #fafafa; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-top: 8px; }
     .check-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; font-size: 12px; }
     .check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+    .banner-carga { background: var(--amarillo-frutika); color: #333; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -53,327 +51,277 @@
     <h4>CONTROL DE CALIDAD</h4>
   </div>
 
-  <form id="formulario">
+  <div class="banner-carga" id="banner-carga">⏳ CARGANDO DATOS DEL SERVIDOR...</div>
+
+  <form id="formulario" style="display:none;">
     <label>NOMBRE DEL RELEVADOR</label>
     <input type="text" id="vendedor" list="lista-relevadores" placeholder="ESCRIBA O BUSQUE SU NOMBRE..." required onchange="actualizarPDV()" autocomplete="off">
-    <datalist id="lista-relevadores">
-      <option value="ANA PIZURNO">
-      <option value="JONATHAN FLORES">
-      <option value="GLORIA MARTINEZ">
-      <option value="GRISELDA MARTINEZ">
-      <option value="HUGO GOMEZ">
-      <option value="JOEL ORTIZ">
-      <option value="LEYLA MENDIETA">
-      <option value="LUIS PESOA">
-      <option value="MARCOS ZALAZAR">
-      <option value="MARIA VERON">
-      <option value="MARISOL DURE">
-      <option value="MICAELA PAREDES">
-      <option value="OMAR SOSA">
-      <option value="REPOSITOR 1">
-      <option value="TANIA BENITEZ">
-      <option value="TOBIAS BURGOS">
-      <option value="YENNIFER ADORNO">
-      <option value="YURIA VERA">
-    </datalist>
+    <datalist id="lista-relevadores"></datalist>
 
     <label>PUNTO DE VENTA</label>
     <select id="pdv" required>
-      <option value="">-- SELECCIONE RELEVADOR --</option>
+      <option value="">-- SELECCIONE RELEVADOR PRIMERO --</option>
     </select>
 
     <div class="selector-secciones">
-        <button type="button" id="tab-venc" class="btn-tab active-venc" onclick="cambiarTab('venc')">📅 PRÓXIMOS A VENCER</button>
-        <button type="button" id="tab-aver" class="btn-tab" onclick="cambiarTab('aver')">⚠️ AVERIADOS</button>
+      <button type="button" id="tab-venc" class="btn-tab active-venc" onclick="cambiarTab('venc')">📅 PRÓXIMOS A VENCER</button>
+      <button type="button" id="tab-aver" class="btn-tab" onclick="cambiarTab('aver')">⚠️ AVERIADOS</button>
     </div>
 
     <div id="panel-vencidos">
-        <div class="pregunta-contenedor">
-            <span style="font-size: 13px; font-weight: bold; color: var(--verde-frutika);">¿HAY PRODUCTOS PRÓXIMOS A VENCER?</span>
-            <div class="botones-decision">
-              <button type="button" id="venc-si" class="btn-sn" onclick="decidirCarga('venc', true)">SÍ</button>
-              <button type="button" id="venc-no" class="btn-sn" onclick="decidirCarga('venc', false)">NO</button>
-            </div>
+      <div class="pregunta-contenedor">
+        <span style="font-size: 13px; font-weight: bold; color: var(--verde-frutika);">¿HAY PRODUCTOS PRÓXIMOS A VENCER?</span>
+        <div class="botones-decision">
+          <button type="button" id="venc-si" class="btn-sn" onclick="decidirCarga('venc', true)">SÍ</button>
+          <button type="button" id="venc-no" class="btn-sn" onclick="decidirCarga('venc', false)">NO</button>
         </div>
-        <div id="seccion-vencidos" class="seccion-productos">
-            <div id="cont-vencidos"></div>
-            <button type="button" class="btn-add" onclick="agregarFila('venc')">+ AÑADIR PRODUCTO</button>
-        </div>
+      </div>
+      <div id="seccion-vencidos" class="seccion-productos">
+        <div id="cont-vencidos"></div>
+        <button type="button" class="btn-add" onclick="agregarFila('venc')">+ AÑADIR PRODUCTO</button>
+      </div>
     </div>
 
     <div id="panel-averiados" style="display:none;">
-        <div class="pregunta-contenedor">
-            <span style="font-size: 13px; font-weight: bold; color: var(--verde-frutika);">¿HAY PRODUCTOS AVERIADOS?</span>
-            <div class="botones-decision">
-              <button type="button" id="aver-si" class="btn-sn" onclick="decidirCarga('aver', true)">SÍ</button>
-              <button type="button" id="aver-no" class="btn-sn" onclick="decidirCarga('aver', false)">NO</button>
-            </div>
+      <div class="pregunta-contenedor">
+        <span style="font-size: 13px; font-weight: bold; color: var(--verde-frutika);">¿HAY PRODUCTOS AVERIADOS?</span>
+        <div class="botones-decision">
+          <button type="button" id="aver-si" class="btn-sn" onclick="decidirCarga('aver', true)">SÍ</button>
+          <button type="button" id="aver-no" class="btn-sn" onclick="decidirCarga('aver', false)">NO</button>
         </div>
-        <div id="seccion-averiados" class="seccion-productos">
-            <div id="cont-averiados"></div>
-            <button type="button" class="btn-add" onclick="agregarFila('aver')">+ AÑADIR AVERÍA</button>
-        </div>
+      </div>
+      <div id="seccion-averiados" class="seccion-productos">
+        <div id="cont-averiados"></div>
+        <button type="button" class="btn-add" onclick="agregarFila('aver')">+ AÑADIR AVERÍA</button>
+      </div>
     </div>
 
     <button type="submit" class="btn-enviar" id="btnEnvio">ENVIAR REPORTE</button>
   </form>
 </div>
 
-<datalist id="lista-productos-datalist">
-    <option value="7840117011680 - AGUA MINERAL SIN GAS 500 ML GÉNESIS">
-    <option value="7840117011697 - AGUA MINERAL SIN GAS 1 L GÉNESIS">
-    <option value="7840117011703 - AGUA MINERAL SIN GAS 2,25 L GÉNESIS">
-    <option value="7840117012045 - PROMO PACK X4 AGUA MINERAL SIN GAS 2,25 L GENESIS">
-    <option value="7840117011710 - AGUA MINERAL CON GAS 500 ML GÉNESIS">
-    <option value="7840117011826 - AGUA FUNCIONAL HARMONY 500 ML GÉNESIS">
-    <option value="7840117011833 - AGUA FUNCIONAL CARE 500 ML GÉNESIS">
-    <option value="7840117012007 - AGUA FUNCIONAL FIBER GREEN 500 ML GÉNESIS">
-    <option value="7840117011994 - AGUA FUNCIONAL YOUNG 500 ML GÉNESIS">
-    
-    <option value="7840117008031 - JUGO 100% MULTI 7 1 L FRUTIKA">
-    <option value="7840117011932 - JUGO 100% NARANJA 1 L FRUTIKA">
-    <option value="7840117011659 - JUGO 100% MIX 1 L FRUTIKA">
-    <option value="7840117012243 - JUGO 100% NARANJA SLIM 200 ML FRUTIKA">
-    <option value="7840117001025 - NECTAR DE NARANJA SLIM 200 ML FRUTIKA">
-    <option value="7840117002022 - NECTAR DE MANZANA SLIM 200 ML FRUTIKA">
-    <option value="7840117004026 - NECTAR DE DURAZNO SLIM 200 ML FRUTIKA">
-    <option value="7840117001018 - NECTAR DE NARANJA 1 L FRUTIKA">
-    <option value="7840117003012 - NECTAR DE POMELO 1 L FRUTIKA">
-    <option value="7840117002015 - NECTAR DE MANZANA 1 L FRUTIKA">
-    <option value="7840117004019 - NECTAR DE DURAZNO 1 L FRUTIKA">
-    <option value="7840117005016 - NECTAR DE GUAYABA 1 L FRUTIKA">
-    <option value="7840117001032 - NECTAR LIGHT DE NARANJA 1 L FRUTIKA">
-    <option value="7840117004033 - NECTAR LIGHT DE DURAZNO 1 L FRUTIKA">
-    <option value="7840117011246 - PROMO PACK X2 NECTAR DE GUAYABA 1 L FRUTIKA">
-    <option value="7840117011178 - PROMO PACK X2 NECTAR DE DURAZNO 1 L FRUTIKA">
-    <option value="7840117011161 - PROMO PACK X2 NECTAR DE MANZANA 1 L FRUTIKA">
-    <option value="7840117011215 - PROMO PACK X2 NECTAR DE POMELO 1 L FRUTIKA">
-    <option value="7840117011154 - PROMO PACK X2 NECTAR DE NARANJA 1 L FRUTIKA">
-    <option value="7840117010843 - PROMO PACK 6X5 NECTAR DE DURAZNO 200ML FRUTIKA">
-    <option value="7840117010836 - PROMO PACK 6X5 NECTAR DE MANZANA 200 ML FRUTIKA">
-    <option value="7840117010829 - PROMO PACK 6X5 NECTAR DE NARANJA 200 ML FRUTIKA">
-    <option value="7840117012595 - 6 JUGOS NÉCTAR DURAZNO X 200ML C/U + UNA TOALLITA ESCOLAR">
-    <option value="7840117012601 - 6 JUGOS NÉCTAR MANZANA X 200ML C/U + UNA TOALLITA ESCOLAR">
-    <option value="7840117012618 - 6 JUGOS NÉCTAR NARANJA X 200ML C/U + UNA TOALLITA ESCOLAR">
-    <option value="7840117008048 - BEBIDA DE MBURUCUYA 1 L FRUTIKA">
-    
-    <option value="7840117010119 - EXTRACTO DE TOMATE 140 G FRUTIKA">
-    <option value="7840117010126 - EXTRACTO DE TOMATE 70 G FRUTIKA">
-    <option value="7840117012229 - EXTRACTO DE TOMATE 220 G FRUTIKA">
-    <option value="7840117010362 - EXTRACTO DE TOMATE TETRA 140 G PERITA">
-    <option value="7840117010379 - EXTRACTO DE TOMATE TETRA 70 G PERITA">
-    <option value="7840117012267 - EXTRACTO DE TOMATE DOYPACK 140 G PERITA">
-    <option value="7840117012274 - EXTRACTO DE TOMATE DOYPACK 70 G PERITA">
-    <option value="7840117012373 - EXTRACTO DE TOMATE 3 KG FRUTIKA">
-    <option value="7840117011567 - PURE DE TOMATE SLIM 220 G FRUTIKA">
-    <option value="7840117012380 - PURÉ DE TOMATE 3 KG FRUTIKA">
-    <option value="7840117012557 - PURE DE TOMATE FRUTIKA 530 G">
-    <option value="7840117011987 - SALSA PIZZA DOYPACK 300 G FRUTIKA">
-    <option value="7840117011963 - SALSA FILETTO DOYPACK 300 G FRUTIKA">
-    <option value="7840117011970 - SALSA POMAROLA DOYPACK 300 G FRUTIKA">
-    <option value="7840117011574 - SALSA PIZZA TETRA 220 G FRUTIKA">
-    <option value="7840117010775 - SALSA PIZZA 3 KG FRUTIKA">
-    
-    <option value="7840117010782 - CHIMICHURRI SIN PICANTE 400 G FRUTIKA">
-    <option value="7840117010942 - CHIMICHURRI PICANTE 400 G FRUTIKA">
-    <option value="7840117010454 - KETCHUP SIN PICANTE 400 G FRUTIKA">
-    <option value="7840117011345 - KETCHUP SIN PICANTE 3 KG PERITA">
-    <option value="7840117011352 - KETCHUP SIN PICANTE 160 ML PERITA">
-    <option value="7840117010645 - KETCHUP PICANTE 400 G FRUTIKA">
-    <option value="7840117010485 - AJI PICANTE 150 ML FRUTIKA">
-</datalist>
+<!-- Datalist dinámico para productos -->
+<datalist id="lista-productos-datalist"></datalist>
 
 <script>
-const PRODUCTOS_VALIDOS = Array.from(document.querySelectorAll("#lista-productos-datalist option")).map(opt => opt.value);
+  // ⚠️ REEMPLAZÁ ESTA URL CON LA URL DE TU APPS SCRIPT
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-o7PwGKadO08q7jC1__qASHLq_pSo4-A1TC4uX_mgLIucHkRXt0lmzmTthYtkYBed/exec";
 
-const datosPDV = {
-  "GLORIA MARTINEZ": ["REAL VILLAMORRA", "REAL SAN VICENTE", "ARETE LAMBARE", "PUEBLO LAMBARE", "SUPERMERCADO METRO", "STA ROSA DE LIMA"],
-  "MARIA VERON": ["ARCHI SAN LORENZO", "GRAN VIA ÑEMBY", "LUISITO ÑEMBY", "REAL ÑEMBY 1", "REAL ÑEMBY 2", "LA BOMBA ÑEMBY"],
-  "HUGO GOMEZ": ["LUISITO LUQUE", "VILLA SOFIA LUQUE", "LT MORACUE", "GRAN VIA LUQUE", "JARDINES VILLA ADELA", "JARDINES MORA CUE", "JARDINES PRIMAVERA", "JARDINES GRAL AQUINO"],
-  "YURIA VERA": ["LT CASA CENTRAL", "LT EXPRESS", "LT EMBOSCADA", "LT MBAYUE", "LT SAN JOSÉ", "LT VILLA HAYES", "LT VILLA MADRID", "LT RINCON", "LUISITO LIMPIO"],
-  "MICAELA PAREDES": ["LUISITO 4 MOJONES", "LUISITO VILLA ELISA", "LA BOMBA TERMINAL", "REAL ACCESO SUR", "PRYCA TERMINAL", "DIEFER ACCESO", "PUEBLO PASEO DEL SUR", "KINGO AVELINO"],
-  "TANIA BENITEZ": ["EDWARD CAPIATA", "LUISITO ITAUGUA", "REAL CAPIATA 2", "SANTA RITA 2", "LA BOMBA AREGUA", "AHORRAZO CAPIATA RUTA 2"],
-  "JOEL ORTIZ": ["CASA GRUTTER DEF", "GRUTTER ABASTO", "SAPROCAL CASA FRESCA", "SUPERMAS ABASTO", "MARANGATU", "LUISITO EUSEBIO AYALA"],
-  "ANA PIZURNO": ["GRAN VIA ASUNCION", "LA BOMBA PROCERES", "REAL FELIX BOGADO", "VILLA SOFIA SAJONIA", "PACIFICO SAJONIA", "LUISITO FELIX BOGADO", "PUEBLO SAN VICENTE", "LA BARCA"],
-  "LUIS PESOA": ["CASA RICA MOLAS", "CASA RICA ESPAÑA", "CASA RICA PERSEVERENCIA", "SALEMMA CARMELITAS", "ARETE PRIMER PRESIDENTE", "ARETE SAUSALITO", "EL PAIS"],
-  "YENNIFER ADORNO": ["COLON GUARAMBARE", "LUISITO YPANE", "LUISITO CAPIATA", "STA. RITA 1", "AHORRAZO CAPIATA", "REAL CAPIATA 1"],
-  "TOBIAS BURGOS": ["CASA RICA LOS LAURELES", "SALEMMA CENTER", "SALEMMA MULTIPLAZA", "REAL FDO.", "PUEBLO FDO.", "LA BOLSA"],
-  "JONATHAN FLORES": ["LUISITO MRA", "KINGO MRA", "PUEBLO MRA", "PUEBLAZO LIMPIO", "PUEBLO ARTIGAS", "LA BOMBA VÍA FÉRREA"],
-  "MARCOS ZALAZAR": ["GUARANI", "LOS JARDINES FDO.", "GRAN VIA ROYAL", "PRYCA EXPRESS"],
-  "GRISELDA MARTINEZ": ["ARETE PINEDO", "AHORRAZO SAN LORENZO", "LA BOMBA STA. TERESA", "SALEMMA SHOPPING SANLO", "LUISITO SAN LORENZO"],
-  "REPOSITOR 1": ["BOX ABASTO", "BOX MRA", "BOX ARATIRI", "BOX CAPIATA R1", "BOX SAN LORENZO", "JARDINES LEOPARDI", "JARDINES LAGUNA"],
-  "MARISOL DURE": ["SAN CAYETANO", "CACIQUE AREGUA", "MOREL HNOS.", "CACIQUE ITAUGUA"],
-  "OMAR SOSA": ["VIRGEN DEL ROSARIO LUQUE", "VIRGEN DEL ROSARIO CAÑADA", "BOX LUQUE", "CACIQUE LUQUE", "AHO AHO COMERCIAL"],
-  "LEYLA MENDIETA": ["RUBENCITO", "SUPERMAS ÑEMBY", "BABY COMERCIAL", "BARATODO"]
-};
+  let datosPDV = {};
+  let PRODUCTOS_VALIDOS = [];
 
-function actualizarPDV() {
-  const v = document.getElementById("vendedor").value;
-  const c = document.getElementById("pdv");
-  c.innerHTML = '<option value="">-- SELECCIONE PDV --</option>';
-  if (v && datosPDV[v]) {
-    datosPDV[v].forEach(p => {
-      let o = document.createElement("option"); o.value = p; o.textContent = p; c.appendChild(o);
-    });
-  }
-}
+  // ── Carga dinámica desde el Sheet ──────────────────────────────────────────
+  async function cargarDatosSheet() {
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const datos = await res.json();
 
-function cambiarTab(t) {
-  document.getElementById('panel-vencidos').style.display = (t === 'venc') ? 'block' : 'none';
-  document.getElementById('panel-averiados').style.display = (t === 'aver') ? 'block' : 'none';
-  document.getElementById('tab-venc').className = (t === 'venc') ? 'btn-tab active-venc' : 'btn-tab';
-  document.getElementById('tab-aver').className = (t === 'aver') ? 'btn-tab active-aver' : 'btn-tab';
-}
+      // Poblar repositores (Hoja 2)
+      datosPDV = datos.repositores;
+      const datalist = document.getElementById("lista-relevadores");
+      Object.keys(datosPDV).forEach(nombre => {
+        const opt = document.createElement("option");
+        opt.value = nombre;
+        datalist.appendChild(opt);
+      });
 
-let respuestas = { venc: null, aver: null };
+      // Poblar productos (Hoja 3)
+      PRODUCTOS_VALIDOS = datos.productos;
+      const prodDatalist = document.getElementById("lista-productos-datalist");
+      datos.productos.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        prodDatalist.appendChild(opt);
+      });
 
-function decidirCarga(tipo, tiene) {
-  respuestas[tipo] = tiene;
-  document.getElementById(`${tipo}-si`).className = tiene ? 'btn-sn active-si' : 'btn-sn';
-  document.getElementById(`${tipo}-no`).className = !tiene ? 'btn-sn active-no' : 'btn-sn';
-  document.getElementById(`seccion-${tipo === 'venc' ? 'vencidos' : 'averiados'}`).style.display = tiene ? "block" : "none";
-  const cont = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
-  if (tiene && cont.children.length === 0) agregarFila(tipo);
-}
+      // Mostrar formulario
+      document.getElementById("banner-carga").style.display = "none";
+      document.getElementById("formulario").style.display = "block";
 
-function validarProducto(input) {
-  const row = input.parentElement;
-  const errorMsg = row.querySelector(".msg-error");
-  if (input.value === "" || PRODUCTOS_VALIDOS.includes(input.value)) {
-    input.classList.remove('input-error');
-    if(errorMsg) errorMsg.style.display = "none";
-  } else {
-    input.classList.add('input-error');
-    if(errorMsg) errorMsg.style.display = "block";
-  }
-}
-
-function toggleOtros(checkbox) {
-  const row = checkbox.closest(".producto-row");
-  const inputOtros = row.querySelector(".input-otros-especificar");
-  inputOtros.style.display = checkbox.checked ? "block" : "none";
-  if(!checkbox.checked) inputOtros.value = "";
-}
-
-function agregarFila(tipo) {
-  const contenedor = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
-  const div = document.createElement("div");
-  div.className = "producto-row";
-  if(tipo === 'aver') div.style.borderLeftColor = "var(--rojo-frutika)";
-  
-  const camposVenc = `
-    <div style="flex:2">
-      <label>VENCIMIENTO</label>
-      <input type="date" class="p-extra" required>
-    </div>`;
-    
-  const camposAver = `
-    <div style="flex:2">
-      <label>TIPO DE AVERÍA (CHECKLIST)</label>
-      <div class="checklist-container">
-        <label class="check-item"><input type="checkbox" value="BOTELLA DAÑADA O GOLPEADA"> BOTELLA DAÑADA O GOLPEADA</label>
-        <label class="check-item"><input type="checkbox" value="ENVASE INFLADO"> ENVASE INFLADO</label>
-        <label class="check-item"><input type="checkbox" value="TAPA ROTA"> TAPA ROTA</label>
-        <label class="check-item"><input type="checkbox" value="PRODUCTO DERRAMADO"> PRODUCTO DERRAMADO</label>
-        <label class="check-item"><input type="checkbox" value="ETIQUETA DAÑADA"> ETIQUETA DAÑADA</label>
-        <label class="check-item"><input type="checkbox" value="PRODUCTO SUCIO"> PRODUCTO SUCIO</label>
-        <label class="check-item"><input type="checkbox" value="CAJA ROTA"> CAJA ROTA</label>
-        <label class="check-item"><input type="checkbox" value="OTROS" onchange="toggleOtros(this)"> OTROS (ESPECIFICAR)</label>
-        <input type="text" class="input-otros-especificar" placeholder="ESCRIBA EL MOTIVO..." style="display:none; margin-top:5px; padding:10px;" oninput="this.value = this.value.toUpperCase()">
-      </div>
-    </div>`;
-
-  div.innerHTML = `
-    <label>PRODUCTO (SELECCIÓN OBLIGATORIA)</label>
-    <input type="text" list="lista-productos-datalist" class="p-prod" placeholder="BUSCAR PRODUCTO..." oninput="validarProducto(this)" required autocomplete="off">
-    <span class="msg-error">⚠️ DEBE SELECCIONAR UN PRODUCTO DE LA LISTA</span>
-    
-    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-      ${tipo === 'venc' ? camposVenc : camposAver}
-      <div style="flex:1">
-        <label>CANT. (OBLIGATORIO)</label>
-        <input type="number" class="p-cant" min="1" placeholder="EJ: 5" required>
-      </div>
-    </div>
-    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button><div style="clear:both"></div>`;
-  contenedor.appendChild(div);
-}
-
-document.getElementById("formulario").onsubmit = function(e) {
-  e.preventDefault();
-  
-  if (respuestas.venc === null || respuestas.aver === null) { 
-    alert("DEBE COMPLETAR EL APARTADO DE PROXIMOS A VENCER Y AVERIADOS."); 
-    return; 
-  }
-
-  let inputsProductos = document.querySelectorAll(".p-prod");
-  let hayErrores = false;
-  inputsProductos.forEach(input => {
-    if (!PRODUCTOS_VALIDOS.includes(input.value)) {
-      input.classList.add('input-error');
-      const errorMsg = input.parentElement.querySelector(".msg-error");
-      if(errorMsg) errorMsg.style.display = "block";
-      hayErrores = true;
+    } catch (err) {
+      document.getElementById("banner-carga").innerHTML = "❌ ERROR AL CARGAR DATOS. RECARGUE LA PÁGINA.";
+      document.getElementById("banner-carga").style.background = "#ffcdd2";
+      console.error(err);
     }
-  });
-
-  if (hayErrores) {
-    alert("❌ NO SE PUEDE ENVIAR: HAY PRODUCTOS NO VÁLIDOS.");
-    return;
   }
 
-  const btn = document.getElementById("btnEnvio");
-  btn.disabled = true; btn.innerText = "ENVIANDO...";
+  cargarDatosSheet();
 
-  const payload = {
-    relevador: document.getElementById("vendedor").value,
-    pdv: document.getElementById("pdv").value,
-    vencidos: [],
-    averiados: []
-  };
+  // ── Funciones del formulario ───────────────────────────────────────────────
+  function actualizarPDV() {
+    const v = document.getElementById("vendedor").value.trim().toUpperCase();
+    const c = document.getElementById("pdv");
+    c.innerHTML = '<option value="">-- SELECCIONE PDV --</option>';
+    if (v && datosPDV[v]) {
+      datosPDV[v].forEach(p => {
+        const o = document.createElement("option");
+        o.value = p; o.textContent = p; c.appendChild(o);
+      });
+    }
+  }
 
-  document.querySelectorAll("#cont-vencidos .producto-row").forEach(r => {
-    payload.vencidos.push({ 
-        producto: r.querySelector(".p-prod").value, 
-        extra: r.querySelector(".p-extra").value, 
-        cant: r.querySelector(".p-cant").value 
-    });
-  });
+  function cambiarTab(t) {
+    document.getElementById('panel-vencidos').style.display = (t === 'venc') ? 'block' : 'none';
+    document.getElementById('panel-averiados').style.display = (t === 'aver') ? 'block' : 'none';
+    document.getElementById('tab-venc').className = (t === 'venc') ? 'btn-tab active-venc' : 'btn-tab';
+    document.getElementById('tab-aver').className = (t === 'aver') ? 'btn-tab active-aver' : 'btn-tab';
+  }
 
-  document.querySelectorAll("#cont-averiados .producto-row").forEach(r => {
-    let seleccionados = [];
-    r.querySelectorAll(".checklist-container input[type='checkbox']:checked").forEach(check => {
-      if(check.value === "OTROS") {
-        let espec = r.querySelector(".input-otros-especificar").value;
-        seleccionados.push("OTROS: " + (espec ? espec : "SIN ESPECIFICAR"));
-      } else {
-        seleccionados.push(check.value);
+  let respuestas = { venc: null, aver: null };
+
+  function decidirCarga(tipo, tiene) {
+    respuestas[tipo] = tiene;
+    document.getElementById(`${tipo}-si`).className = tiene ? 'btn-sn active-si' : 'btn-sn';
+    document.getElementById(`${tipo}-no`).className = !tiene ? 'btn-sn active-no' : 'btn-sn';
+    const secId = tipo === 'venc' ? 'seccion-vencidos' : 'seccion-averiados';
+    document.getElementById(secId).style.display = tiene ? "block" : "none";
+    const cont = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
+    if (tiene && cont.children.length === 0) agregarFila(tipo);
+  }
+
+  function validarProducto(input) {
+    const row = input.parentElement;
+    const errorMsg = row.querySelector(".msg-error");
+    if (input.value === "" || PRODUCTOS_VALIDOS.includes(input.value)) {
+      input.classList.remove('input-error');
+      if (errorMsg) errorMsg.style.display = "none";
+    } else {
+      input.classList.add('input-error');
+      if (errorMsg) errorMsg.style.display = "block";
+    }
+  }
+
+  function toggleOtros(checkbox) {
+    const row = checkbox.closest(".producto-row");
+    const inputOtros = row.querySelector(".input-otros-especificar");
+    inputOtros.style.display = checkbox.checked ? "block" : "none";
+    if (!checkbox.checked) inputOtros.value = "";
+  }
+
+  function agregarFila(tipo) {
+    const contenedor = document.getElementById(`cont-${tipo === 'venc' ? 'vencidos' : 'averiados'}`);
+    const div = document.createElement("div");
+    div.className = "producto-row";
+    if (tipo === 'aver') div.style.borderLeftColor = "var(--rojo-frutika)";
+
+    const camposVenc = `
+      <div style="flex:2">
+        <label>VENCIMIENTO</label>
+        <input type="date" class="p-extra" required>
+      </div>`;
+
+    const camposAver = `
+      <div style="flex:2">
+        <label>TIPO DE AVERÍA (CHECKLIST)</label>
+        <div class="checklist-container">
+          <label class="check-item"><input type="checkbox" value="BOTELLA DAÑADA O GOLPEADA"> BOTELLA DAÑADA O GOLPEADA</label>
+          <label class="check-item"><input type="checkbox" value="ENVASE INFLADO"> ENVASE INFLADO</label>
+          <label class="check-item"><input type="checkbox" value="TAPA ROTA"> TAPA ROTA</label>
+          <label class="check-item"><input type="checkbox" value="PRODUCTO DERRAMADO"> PRODUCTO DERRAMADO</label>
+          <label class="check-item"><input type="checkbox" value="ETIQUETA DAÑADA"> ETIQUETA DAÑADA</label>
+          <label class="check-item"><input type="checkbox" value="PRODUCTO SUCIO"> PRODUCTO SUCIO</label>
+          <label class="check-item"><input type="checkbox" value="CAJA ROTA"> CAJA ROTA</label>
+          <label class="check-item"><input type="checkbox" value="OTROS" onchange="toggleOtros(this)"> OTROS (ESPECIFICAR)</label>
+          <input type="text" class="input-otros-especificar" placeholder="ESCRIBA EL MOTIVO..." style="display:none; margin-top:5px; padding:10px;" oninput="this.value = this.value.toUpperCase()">
+        </div>
+      </div>`;
+
+    div.innerHTML = `
+      <label>PRODUCTO (SELECCIÓN OBLIGATORIA)</label>
+      <input type="text" list="lista-productos-datalist" class="p-prod" placeholder="BUSCAR PRODUCTO..." oninput="validarProducto(this)" required autocomplete="off">
+      <span class="msg-error">⚠️ DEBE SELECCIONAR UN PRODUCTO DE LA LISTA</span>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+        ${tipo === 'venc' ? camposVenc : camposAver}
+        <div style="flex:1">
+          <label>CANT. (OBLIGATORIO)</label>
+          <input type="number" class="p-cant" min="1" placeholder="EJ: 5" required>
+        </div>
+      </div>
+      <button type="button" class="btn-remove" onclick="this.parentElement.remove()">ELIMINAR</button>
+      <div style="clear:both"></div>`;
+    contenedor.appendChild(div);
+  }
+
+  document.getElementById("formulario").onsubmit = function(e) {
+    e.preventDefault();
+
+    if (respuestas.venc === null || respuestas.aver === null) {
+      alert("DEBE COMPLETAR EL APARTADO DE PROXIMOS A VENCER Y AVERIADOS.");
+      return;
+    }
+
+    let hayErrores = false;
+    document.querySelectorAll(".p-prod").forEach(input => {
+      if (!PRODUCTOS_VALIDOS.includes(input.value)) {
+        input.classList.add('input-error');
+        const errorMsg = input.parentElement.querySelector(".msg-error");
+        if (errorMsg) errorMsg.style.display = "block";
+        hayErrores = true;
       }
     });
 
-    if(seleccionados.length === 0) {
-        alert("POR FAVOR SELECCIONE AL MENOS UN TIPO DE AVERÍA PARA LOS PRODUCTOS.");
-        btn.disabled = false; btn.innerText = "ENVIAR REPORTE";
-        throw "Validación Checklist fallida";
+    if (hayErrores) {
+      alert("❌ NO SE PUEDE ENVIAR: HAY PRODUCTOS NO VÁLIDOS.");
+      return;
     }
 
-    payload.averiados.push({ 
-        producto: r.querySelector(".p-prod").value, 
-        observacion: seleccionados.join(" | "), 
-        cant: r.querySelector(".p-cant").value 
-    });
-  });
+    const btn = document.getElementById("btnEnvio");
+    btn.disabled = true; btn.innerText = "ENVIANDO...";
 
-  fetch("https://script.google.com/macros/s/AKfycbx-o7PwGKadO08q7jC1__qASHLq_pSo4-A1TC4uX_mgLIucHkRXt0lmzmTthYtkYBed/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify(payload)
-  }).then(() => { 
-    alert("REPORTE ENVIADO CORRECTAMENTE"); 
-    location.reload(); 
-  });
-};
+    const payload = {
+      relevador: document.getElementById("vendedor").value,
+      pdv: document.getElementById("pdv").value,
+      vencidosRespuesta: respuestas.venc,
+      averiadosRespuesta: respuestas.aver,
+      vencidos: [],
+      averiados: []
+    };
+
+    document.querySelectorAll("#cont-vencidos .producto-row").forEach(r => {
+      payload.vencidos.push({
+        producto: r.querySelector(".p-prod").value,
+        extra: r.querySelector(".p-extra").value,
+        cant: r.querySelector(".p-cant").value
+      });
+    });
+
+    try {
+      document.querySelectorAll("#cont-averiados .producto-row").forEach(r => {
+        let seleccionados = [];
+        r.querySelectorAll(".checklist-container input[type='checkbox']:checked").forEach(check => {
+          if (check.value === "OTROS") {
+            const espec = r.querySelector(".input-otros-especificar").value;
+            seleccionados.push("OTROS: " + (espec ? espec : "SIN ESPECIFICAR"));
+          } else {
+            seleccionados.push(check.value);
+          }
+        });
+
+        if (seleccionados.length === 0) {
+          alert("POR FAVOR SELECCIONE AL MENOS UN TIPO DE AVERÍA.");
+          btn.disabled = false; btn.innerText = "ENVIAR REPORTE";
+          throw new Error("Validación Checklist fallida");
+        }
+
+        payload.averiados.push({
+          producto: r.querySelector(".p-prod").value,
+          observacion: seleccionados.join(" | "),
+          cant: r.querySelector(".p-cant").value
+        });
+      });
+    } catch (err) {
+      return;
+    }
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(payload)
+    }).then(() => {
+      alert("REPORTE ENVIADO CORRECTAMENTE");
+      location.reload();
+    });
+  };
 </script>
 </body>
 </html>
